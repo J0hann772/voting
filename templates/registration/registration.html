@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'registration' %}" >Регистрация</a>
+        <a href="{% url 'main' %}">Главная</a>
+        <a href="/accounts/login/">Вход</a>
+    </nav>
+
+    <h1>Авторизация</h1>
+    <form action="{% url 'registration' %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Зарегистрироваться" >
+    </form>
+    {% if errors%}
+        {{ errors }}
+    {% endif %}
+
+</body>
+</html>
