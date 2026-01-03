@@ -1,16 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Registration</title>
-</head>
-<body>
-    <nav>
-        <a href="{% url 'registration' %}" >Регистрация</a>
-        <a href="{% url 'main' %}">Главная</a>
-        <a href="/accounts/login/">Вход</a>
-    </nav>
+{% extends 'base.html' %}
+{% block title %} Авторизация {% endblock %}
 
+{% block content %}
     <h1>Авторизация</h1>
     <form action="{% url 'registration' %}" method="POST">
         {% csrf_token %}
@@ -20,6 +11,5 @@
     {% if errors%}
         {{ errors }}
     {% endif %}
+{% endblock %}
 
-</body>
-</html>
