@@ -3,5 +3,63 @@
 {% block title %} Главная {% endblock %}
 
 {% block content %}
-<p>dbkuyBWW</p>
+
+
+
+    {% if votings %}
+        <ul>
+            {% for v in votings %}
+            <div style="border: 1px solid #ccc; margin-bottom: 20px; padding: 10px;">
+                <h3>{{ v.title }}</h3>
+                <p>{{ v.description }}</p>
+
+                {% if v.creator == user %}
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" name="delete_voting" value="{{ v.id }}">
+                            Удалить
+                        </button>
+                    </form>
+                {% endif %}
+
+                <form method="post" action="{% url 'add_vote' v.id %}">
+                    {% csrf_token %}
+                    <ul>
+                        {% for c in v.choices.all %}
+                        <li>
+
+                            {% if user.is_authenticated %}
+                            <button type="submit" name="choice_id" value="{{ c.id }}">
+                                {{ c.text }}
+                            </button>
+                            <span>(Голосов: {{ c.votes.count }})</span>
+                            {% else %}
+                            {{ c.text }} — <strong>{{ c.votes.count }}</strong> голосов
+                            {%endif%}
+
+
+                        </li>
+                        {% empty %}
+                            <li>Вариантов нет</li>
+                        {% endfor %}
+                    </ul>
+                </form>
+                <span>Cоздатель: {{ v.creator }}</span>
+            </div>
+            {% endfor %}
+        </ul>
+
+        <div class="pagination">
+            {% for p in pages %}
+                <a href="?page={{ p }}"
+                   style="margin-right: 5px; {% if p == current_page %}font-weight: bold; text-decoration: none; color: black;{% endif %}">
+                   [{{ p }}]
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Записей пока нет.</p>
+    {% endif %}
+
+
 {% endblock %}

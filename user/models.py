@@ -11,7 +11,7 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email' # вход по почте
 
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username', 'nickname'] # для superuser
 
     def __str__(self):
         return self.username
