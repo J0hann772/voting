@@ -20,5 +20,7 @@ __pycache__/
 node_modules/
 package-lock.json
 
+media/*
+!media/defaults/
+!media/avatars/.gitkeep
 
-media/

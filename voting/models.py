@@ -4,6 +4,8 @@ from user.models import User
 
 class Voting(models.Model): #Голосование
 
+
+
     class VotingType(models.TextChoices):
         SINGLE = 'single', 'Один вариант'
         MULTIPLE = 'multiple', 'Несколько вариантов'

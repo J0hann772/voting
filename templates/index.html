@@ -44,7 +44,21 @@
                         {% endfor %}
                     </ul>
                 </form>
-                <span>Cоздатель: {{ v.creator }}</span>
+
+                <div style="display: flex; align-items: center; margin-top: 10px;">
+                        {% if v.creator.profile.avatar %}
+                            <img src="{{ v.creator.profile.avatar.url }}"
+                                 style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; margin-right: 10px;"
+                                 alt="{{ v.creator.nickname }}">
+                        {% endif %}
+
+                        <span style="font-weight: 545; color: #555;">
+                            <a href="{% url 'profile' v.creator.nickname %}" class="text-link">
+                                {{ v.creator.nickname }}
+                            </a>
+                        </span>
+                </div>
+
             </div>
             {% endfor %}
         </ul>

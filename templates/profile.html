@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% block title %} Create_voting {% endblock %}
+
+
+{% block content %}
+    <h2>{% if user == found_user %}Ваш профиль{% else %}Профиль {{ found_user.nickname }}{% endif %}</h2>
+
+
+    {% if not user == found_user or not is_editing_mode %}
+
+        {% if found_profile.avatar %}
+            <img src="{{ found_profile.avatar.url }}" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;">
+        {% else %}
+            <div style="width: 150px; height: 150px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center;">
+                Нет фото
+            </div>
+        {% endif %}
+        <br>
+
+        <span> Никнейм: {{ found_user.nickname }} </span><br>
+
+        <span> Email: {{ found_user.email }} </span><br>
+
+        <span> О себе: {{ found_profile.bio }} </span><br>
+
+        {% if user == found_user %}
+        <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px;">
+            {% if not is_editing_mode %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="btn_action" value="start_editing" class="btn btn-primary">
+                        Редактировать профиль
+                    </button>
+                </form>
+            {% else %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="btn_action" value="stop_editing" class="btn btn-success">
+                        Закончить редактирование
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+        {% endif %}
+
+
+
+
+
+    {% else %}
+
+
+
+            <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
+                {% if not changing_avatar %}
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        {% if found_profile.avatar %}
+                            <img src="{{ found_profile.avatar.url }}" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;">
+                        {% endif %}
+
+                        {% if is_editing_mode %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                <button type="submit" name="btn_action" value="changing_avatar" class="btn btn-outline-primary">Сменить фото</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 10px;">
+                        {% csrf_token %}
+                        <input type="hidden" name="edit_mode" value="avatar">
+
+                        <span>Выберите файл:</span>
+                        {{ form.avatar }}
+
+                        {% if form.avatar.errors %}
+                            <div style="color: red; font-size: 0.8em;">
+                                {{ form.avatar.errors.0 }}
+                            </div>
+                        {% endif %}
+
+                        <input type="hidden" name="nickname" value="{{ found_user.nickname }}">
+                        <input type="hidden" name="email" value="{{ found_user.email }}">
+
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" name="btn_action" value="cansel_change" class="btn btn-outline-danger">Отмена</button>
+                            <button type="submit" name="btn_action" value="save" class="btn btn-outline-success">Сохранить</button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+            {% if not changing_nickname %}
+                <span>Никнейм: {{ found_user.nickname }}</span>
+                <form method="POST" action="{% url 'profile' found_user.nickname %}">
+                    {% csrf_token %}
+                    <button type="submit" name="btn_action" value="changing_nickname" class="btn btn-outline-primary">Изменить</button>
+
+                </form>
+            {% else %}
+                <form method="POST" action="{% url 'profile' found_user.nickname %}" style="display: flex; align-items: center; gap: 10px;">
+                    {% csrf_token %}
+                    <div class="field-wrapper">
+                        {{ form.nickname }}
+                        {% if form.nickname.errors %}<div style="color: red">{{ form.nickname.errors.0 }}</div>{% endif %}
+                    </div>
+                    <input type="hidden" name="edit_mode" value="nickname">
+                    <input type="hidden" name="email" value="{{ found_user.email }}">
+                    <button type="submit" name="btn_action" value="save" class="btn btn-outline-success">Сохранить</button>
+                    <button type="submit" name="btn_action" value="cansel_change" class="btn btn-outline-danger">Отмена</button>
+                </form>
+            {% endif %}
+        </div>
+
+
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+            {% if not changing_email %}
+                <span>Email: {{ found_user.email }}</span>
+                <form method="POST" action="{% url 'profile' found_user.nickname %}">
+                    {% csrf_token %}
+                    <button type="submit" name="btn_action" value="changing_email" class="btn btn-outline-primary">Изменить</button>
+                </form>
+            {% else %}
+                <form method="POST" action="{% url 'profile' found_user.nickname %}" style="display: flex; align-items: center; gap: 10px;">
+                    {% csrf_token %}
+                    <div class="field-wrapper">
+                        {{ form.email }}
+                        {% if form.email.errors %}<div style="color: red">{{ form.email.errors.0 }}</div>{% endif %}
+                    </div>
+                    <input type="hidden" name="edit_mode" value="email">
+                    <input type="hidden" name="nickname" value="{{ found_user.nickname }}">
+                    <button type="submit" name="btn_action" value="save" class="btn btn-outline-success">Сохранить</button>
+                    <button type="submit" name="btn_action" value="cansel_change" class="btn btn-outline-danger">Отмена</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+            {% if not changing_bio %}
+                <span>О себе: {{ found_profile.bio }}</span>
+                <form method="POST" action="{% url 'profile' found_user.nickname %}">
+                    {% csrf_token %}
+                    <button type="submit" name="btn_action" value="changing_bio" class="btn btn-outline-primary">Изменить</button>
+                </form>
+            {% else %}
+                <form method="POST" action="{% url 'profile' found_user.nickname %}" style="display: flex; align-items: center; gap: 10px;">
+                    {% csrf_token %}
+                    <div class="field-wrapper">
+                        {{ form.bio }}
+                        {% if form.bio.errors %}<div style="color: red">{{ form.bio.errors.0 }}</div>{% endif %}
+                    </div>
+                    <input type="hidden" name="edit_mode" value="bio">
+                    <input type="hidden" name="nickname" value="{{ found_user.nickname }}">
+                    <input type="hidden" name="email" value="{{ found_user.email }}">
+                    <button type="submit" name="btn_action" value="save" class="btn btn-outline-success">Сохранить</button>
+                    <button type="submit" name="btn_action" value="cansel_change" class="btn btn-outline-danger">Отмена</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+            {% if not changing_password %}
+                <span>Пароль: ******</span>
+                <form method="POST" action="{% url 'profile' found_user.nickname %}">
+                    {% csrf_token %}
+                    <button type="submit" name="btn_action" value="changing_password" class="btn btn-outline-primary">Изменить</button>
+                </form>
+            {% else %}
+                <form method="POST" action="{% url 'profile' found_user.nickname %}" style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
+                    {% csrf_token %}
+                    <input type="hidden" name="edit_mode" value="password">
+
+                    {{ form.old_password }}
+                    {% if form.old_password.errors %}<div style="color: red; font-size: 0.8em;">{{ form.old_password.errors.0 }}</div>{% endif %}
+
+                    {{ form.password }}
+                    {% if form.password.errors %}<div style="color: red; font-size: 0.8em;">{{ form.password.errors.0 }}</div>{% endif %}
+
+                    {{ form.confirm_pass }}
+                    {% if form.confirm_pass.errors %}<div style="color: red; font-size: 0.8em;">{{ form.confirm_pass.errors.0 }}</div>{% endif %}
+
+                    <input type="hidden" name="nickname" value="{{ found_user.nickname }}">
+                    <input type="hidden" name="email" value="{{ found_user.email }}">
+
+                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                        <button type="submit" name="btn_action" value="cansel_change" class="btn btn-outline-danger">Отмена</button>
+                        <button type="submit" name="btn_action" value="save" class="btn btn-outline-success">Сохранить</button>
+                    </div>
+                </form>
+            {% endif %}
+                    </div>
+        </div>
+
+
+
+        <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px;">
+            {% if not is_editing_mode %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="btn_action" value="start_editing" class="btn btn-primary">
+                        Редактировать профиль
+                    </button>
+                </form>
+            {% else %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="btn_action" value="stop_editing" class="btn btn-success">
+                        Закончить редактирование
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+
+
+    {% endif %}
+
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
