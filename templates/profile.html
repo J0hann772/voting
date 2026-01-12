@@ -195,6 +195,24 @@
                     </div>
         </div>
 
+        <div style="display: flex; align-items: center; gap: 10px;">
+
+                <form method="POST" action="{% url 'profile' found_user.nickname %}" style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
+                    {% csrf_token %}
+
+
+
+                    <input type="hidden" name="nickname" value="{{ found_user.nickname }}">
+                    <input type="hidden" name="email" value="{{ found_user.email }}">
+
+                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                        <button type="submit" name="btn_action" value="delete_user" class="btn btn-outline-danger">Удалить аккаунт</button>
+
+                    </div>
+                </form>
+
+        </div>
+
 
 
         <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px;">

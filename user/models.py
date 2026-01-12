@@ -24,7 +24,7 @@ def get_random_avatars():
     default_avatars = [
         'defaults/blue.svg',
         'defaults/red.svg',
-        'defaults/green.svg'
+        'defaults/green.svg',
         'defaults/yellow.svg',
         'defaults/pink.svg',
         'defaults/grey.svg'

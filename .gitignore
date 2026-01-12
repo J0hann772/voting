@@ -22,5 +22,5 @@ package-lock.json
 
 media/*
 !media/defaults/
-!media/avatars/.gitkeep
+!media/avatars/
 

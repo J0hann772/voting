@@ -114,6 +114,10 @@ def profile(request, nickname):
 
 
 
+            elif act == "delete_user":
+                logout(request)
+                user.delete()
+                return redirect('main')
 
             elif act == "changing_nickname":
                 change_pair = ('changing_nickname', True)

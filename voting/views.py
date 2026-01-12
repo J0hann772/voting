@@ -5,61 +5,88 @@ from voting.models import Choice, Vote, Voting
 
 
 def save_vote(request, voting_id):
-    if request.method != 'POST':
+    if request.method != 'POST' or not request.user.is_authenticated:
         return redirect('main')
-
-    user = request.user
-    if not user.is_authenticated:
-        return redirect('login')
 
     c_id = request.POST.get('choice_id')
-    choice = get_object_or_404(Choice, id=c_id)
-    voting = choice.voting
+    ans = get_object_or_404(Choice, id=c_id)
+    v_obj = ans.voting
 
 
-    user_votes = Vote.objects.filter(author=user, choice__voting=voting)
-
-
-    if voting.voting_type == 'single' and user_votes.exists():
+    user_votes = Vote.objects.filter(author=request.user, choice__voting=v_obj)
+    if user_votes.count() >= v_obj.max_votes:
         return redirect('main')
 
-
-    if voting.voting_type == 'multiple' and user_votes.count() >= voting.max_votes:
-        return redirect('main')
-
-
-    Vote.objects.get_or_create(author=user, choice=choice)
-
+    Vote.objects.get_or_create(author=request.user, choice=ans)
     return redirect('main')
-
 
 def create_voting(request):
-    if request.method != 'POST':
-        if not request.user.is_authenticated:
-            return redirect('login')
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    opts = ['', '']
+    msg = None
+
+    if request.method == 'POST':
+        form = CreateVotingForm(request.POST)
+        opts = request.POST.getlist('choice_text')
+        btn = request.POST.get('action')
+
+        if btn == 'add_choice':
+
+            has_empty = False
+            for x in opts:
+                if not x.strip():
+                    has_empty = True
+                    break
+
+            if has_empty:
+                msg = "Нельзя добавить новое поле, пока есть пустые варианты!"
+            else:
+                opts.append('')
+
+        elif btn and btn.startswith('remove_'):
+
+            idx = int(btn.split('_')[1])
+            if len(opts) > 2:
+                opts.pop(idx)
+            else:
+                msg = "Нельзя оставить меньше двух вариантов!"
+
+
+        elif btn == 'save_voting':
+
+            valid_opts = [t.strip() for t in opts if t.strip()]
+
+
+            form.instance.num_choices = len(valid_opts)
+
+            if form.is_valid():
+                mv = form.cleaned_data.get('max_votes')
+                nc = len(valid_opts)
+
+                if nc < 2:
+                    msg = "Нужно заполнить хотя бы два варианта!"
+                elif mv >= nc:
+                    msg = f"Голосов ({mv}) должно быть меньше выбора ({nc})!"
+                else:
+                    obj = form.save(commit=False)
+                    obj.creator = request.user
+                    obj.num_choices = nc
+                    obj.save()
+
+                    for text in valid_opts:
+                        Choice.objects.create(voting=obj, text=text)
+
+                    return redirect('main')
+    else:
         form = CreateVotingForm()
-        context = {'form': form}
 
-        return render(request, 'create_voting.html', context=context)
-
-    form = CreateVotingForm(data=request.POST)
-
-    if form.is_valid():
-        voting = form.save(commit=False)
-
-
-        voting.creator = request.user
-        if voting.max_votes!=1:
-            voting.voting_type = 'multiple'
-        else:
-            voting.voting_type = 'single'
-
-
-        voting.save()
-        return redirect('main')
-
-    return redirect('main')
-
+    return render(request, 'create_voting.html', {
+        'form': form,
+        'choices': opts,
+        'error': msg
+    })
 
 def index(request):
     if request.method == 'POST':
