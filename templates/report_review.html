@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Report_history {% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'voting/report.css' %}?v=1">
+
+<table>
+    <tr>
+        <th>Логин автора жалобы</th>
+        <th>Ник автора жалобы</th>
+        <th>Логин автора голосования</th>
+        <th>Ник автора голосования</th>
+        <th>Дата регистрации автора голосования</th>
+        <th>Админ ли автор голосования</th>
+        <th>Название голосования</th>
+        <th>Описание голосования</th>
+        <th>Дата создания голосования</th>
+    </tr>
+
+    <tr>
+        <td>{{ report.author.email }}</td>
+        <td>{{ report.author.nickname }}</td>
+        <td>{{ report.voting.creator.email }}</td>
+        <td>{{ report.voting.creator.nickname }}</td>
+        <td>{{ report.voting.creator.date_joined }}</td>
+        <td>{{ report.voting.creator.is_staff }}</td>
+        <td>{{ report.voting.title }}</td>
+        <td>{{ report.voting.description }}</td>
+        <td>{{ report.voting.created_at }}</td>
+    </tr>
+</table>
+{% if report.active %}
+    <div class="review_btns">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="delete_voting" class="review_btn">Удалить голосование</button>
+        </form>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="ban_user" class="review_btn">Забанить автора</button>
+        </form>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="close_report" class="close_btn">Закрыть жалобу</button>
+    </form>
+{% else %}
+    <p class="closed">Жалоба закрыта</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,581 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ru" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>voting.views &mdash; документация Hard Second Project 0.3</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=d32dc9ce" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=da8fd15d"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/translations.js?v=cd1d70c9"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="../../genindex.html" />
+    <link rel="search" title="Поиск" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Hard Second Project
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Поиск в документации" aria-label="Поиск в документации" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
+              <p class="caption" role="heading"><span class="caption-text">Содержание:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../structure.html">Структура проекта</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../code.html">Документация кода</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Меню навигации для мобильных устройств" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Hard Second Project</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Навигация по страницам">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Код модуля</a></li>
+      <li class="breadcrumb-item active">voting.views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Исходный код voting.views</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">get_object_or_404</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_required</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Count</span><span class="p">,</span> <span class="n">Q</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voting.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">CreateVotingForm</span><span class="p">,</span> <span class="n">ReportForm</span><span class="p">,</span> <span class="n">CommentForm</span><span class="p">,</span> <span class="n">StatisticsForm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">voting.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Choice</span><span class="p">,</span> <span class="n">Vote</span><span class="p">,</span> <span class="n">Voting</span><span class="p">,</span> <span class="n">Report</span><span class="p">,</span> <span class="n">Comment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">user.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.admin.views.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">staff_member_required</span>
+
+<div class="viewcode-block" id="save_vote">
+<a class="viewcode-back" href="../../code.html#voting.views.save_vote">[документация]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_vote</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">voting_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Сохраняет голос текущего пользователя за выбранный вариант. ********!!</span>
+
+<span class="sd">        Проверяет, не голосовал ли пользователь ранее, и если нет —</span>
+<span class="sd">        создает запись голоса.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request (HttpRequest): Объект запроса Django.</span>
+<span class="sd">            voting_id (int): Первичный ключ (ID) голосования.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            HttpResponseRedirect: Перенаправление на главную страницу после сохранения.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Http404: Если голосование или вариант ответа не найдены.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="s1">&#39;POST&#39;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">)</span>
+
+    <span class="n">choice_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;choice_id&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">choice_id</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Не выбран вариант для голосования&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;voting&#39;</span><span class="p">,</span> <span class="n">voting_id</span><span class="o">=</span><span class="n">voting_id</span><span class="p">)</span>
+
+    <span class="n">choice</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Choice</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">choice_id</span><span class="p">)</span>
+    <span class="n">voting</span> <span class="o">=</span> <span class="n">choice</span><span class="o">.</span><span class="n">voting</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">voting</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Голосование завершено&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;voting&#39;</span><span class="p">,</span> <span class="n">voting_id</span><span class="o">=</span><span class="n">voting_id</span><span class="p">)</span>
+
+    <span class="n">existing_vote</span> <span class="o">=</span> <span class="n">Vote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">author</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+        <span class="n">choice__voting</span><span class="o">=</span><span class="n">voting</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">existing_vote</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Вы уже проголосовали в этом опросе!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;voting&#39;</span><span class="p">,</span> <span class="n">voting_id</span><span class="o">=</span><span class="n">voting_id</span><span class="p">)</span>
+
+    <span class="n">user_votes_count</span> <span class="o">=</span> <span class="n">Vote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">author</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+        <span class="n">choice__voting</span><span class="o">=</span><span class="n">voting</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">user_votes_count</span> <span class="o">&gt;=</span> <span class="n">voting</span><span class="o">.</span><span class="n">max_votes</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Вы не можете голосовать более </span><span class="si">{</span><span class="n">voting</span><span class="o">.</span><span class="n">max_votes</span><span class="si">}</span><span class="s2"> раз(а) в этом опросе!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;voting&#39;</span><span class="p">,</span> <span class="n">voting_id</span><span class="o">=</span><span class="n">voting_id</span><span class="p">)</span>
+
+    <span class="c1"># Создаем голос</span>
+    <span class="n">Vote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="n">author</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+        <span class="n">choice</span><span class="o">=</span><span class="n">choice</span><span class="p">,</span>
+        <span class="n">created_at</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Ваш голос учтен!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;voting&#39;</span><span class="p">,</span> <span class="n">voting_id</span><span class="o">=</span><span class="n">voting_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create_voting">
+<a class="viewcode-back" href="../../code.html#voting.views.create_voting">[документация]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_voting</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">)</span>
+
+    <span class="n">opts</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">CreateVotingForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+        <span class="n">opts</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s1">&#39;choice_text&#39;</span><span class="p">)</span>
+        <span class="n">btn</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;action&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">btn</span> <span class="o">==</span> <span class="s1">&#39;add_choice&#39;</span><span class="p">:</span>
+
+            <span class="n">has_empty</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="n">has_empty</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">has_empty</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Нельзя добавить новое поле, пока есть пустые варианты!&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">opts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">btn</span> <span class="ow">and</span> <span class="n">btn</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;remove_&#39;</span><span class="p">):</span>
+
+            <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">btn</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">opts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Нельзя оставить меньше двух вариантов!&quot;</span>
+
+
+        <span class="k">elif</span> <span class="n">btn</span> <span class="o">==</span> <span class="s1">&#39;save_voting&#39;</span><span class="p">:</span>
+
+            <span class="n">valid_opts</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">opts</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+
+
+            <span class="n">form</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">num_choices</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_opts</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+                <span class="n">mv</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;max_votes&#39;</span><span class="p">)</span>
+                <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_opts</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">nc</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Нужно заполнить хотя бы два варианта!&quot;</span>
+                <span class="k">elif</span> <span class="n">mv</span> <span class="o">&gt;=</span> <span class="n">nc</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Голосов (</span><span class="si">{</span><span class="n">mv</span><span class="si">}</span><span class="s2">) должно быть меньше выбора (</span><span class="si">{</span><span class="n">nc</span><span class="si">}</span><span class="s2">)!&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">obj</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">num_choices</span> <span class="o">=</span> <span class="n">nc</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+                    <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">valid_opts</span><span class="p">:</span>
+                        <span class="n">Choice</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">voting</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
+
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">CreateVotingForm</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;create_voting.html&#39;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s1">&#39;form&#39;</span><span class="p">:</span> <span class="n">form</span><span class="p">,</span>
+        <span class="s1">&#39;choices&#39;</span><span class="p">:</span> <span class="n">opts</span><span class="p">,</span>
+        <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="n">msg</span>
+    <span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="index">
+<a class="viewcode-back" href="../../code.html#voting.views.index">[документация]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">page_val</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;page&#39;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">p_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">page_val</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">p_idx</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+    <span class="n">count</span> <span class="o">=</span> <span class="n">Voting</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="n">pages_num</span> <span class="o">=</span> <span class="p">(</span><span class="n">count</span> <span class="o">+</span> <span class="mi">9</span><span class="p">)</span> <span class="o">//</span> <span class="mi">10</span>
+
+
+    <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">p_idx</span> <span class="o">*</span> <span class="mi">10</span>
+
+
+    <span class="n">votings</span> <span class="o">=</span> <span class="n">Voting</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>\
+                        <span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span><span class="s1">&#39;choices__votes&#39;</span><span class="p">,</span> <span class="s1">&#39;likes&#39;</span><span class="p">)</span>\
+                        <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-id&#39;</span><span class="p">)[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+
+    <span class="n">ctx</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;votings&#39;</span><span class="p">:</span> <span class="n">votings</span><span class="p">,</span>
+        <span class="s1">&#39;pages&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">pages_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s1">&#39;current_page&#39;</span><span class="p">:</span> <span class="n">p_idx</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+        <span class="n">ctx</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
+
+    <span class="n">ctx</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;votings&#39;</span><span class="p">:</span> <span class="n">votings</span><span class="p">,</span>
+        <span class="s1">&#39;pages&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">pages_num</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+
+        <span class="s1">&#39;current_page&#39;</span><span class="p">:</span> <span class="n">p_idx</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;index.html&#39;</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="report">
+<a class="viewcode-back" href="../../code.html#voting.views.report">[документация]</a>
+<span class="nd">@login_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">voting_id</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Создание жалобы на голосование.</span>
+
+<span class="sd">    Только для авторизованных пользователей. Позволяет оставить жалобу на голосование (можно либо выбрать готовую из списка, либо написать свою)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        request (HttpRequest): Объект запроса Django.</span>
+<span class="sd">        voting_id (int): Первичный ключ (ID) голосования.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        HttpResponse: HTML-страница с формой жалобы</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">title</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">report</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">voting</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Voting</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">voting_id</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="n">report_form</span> <span class="o">=</span> <span class="n">ReportForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">)</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">report_form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">title</span><span class="p">:</span>
+                <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;Вы ничего не выбрали&quot;</span>
+            <span class="k">elif</span> <span class="n">title</span> <span class="o">==</span> <span class="s2">&quot;other&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">description</span><span class="p">:</span>
+                <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;Введите текст&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">report</span> <span class="o">=</span> <span class="n">Report</span><span class="p">(</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span><span class="p">,</span> 
+                                <span class="n">description</span> <span class="o">=</span> <span class="n">description</span><span class="p">,</span>
+                                <span class="n">author</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                                <span class="n">voting</span> <span class="o">=</span> <span class="n">voting</span><span class="p">)</span>
+                <span class="n">report</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="n">report_form</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">report_form</span> <span class="o">=</span> <span class="n">ReportForm</span><span class="p">()</span>
+
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;report_form&quot;</span><span class="p">:</span> <span class="n">report_form</span><span class="p">,</span>
+        <span class="s2">&quot;report_model&quot;</span><span class="p">:</span> <span class="n">report</span><span class="p">,</span>
+        <span class="s2">&quot;error&quot;</span> <span class="p">:</span> <span class="n">error</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;report.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="report_history">
+<a class="viewcode-back" href="../../code.html#voting.views.report_history">[документация]</a>
+<span class="nd">@staff_member_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">report_history</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Просмотр истории жалоб.</span>
+
+<span class="sd">    Список всех жалоб в одной таблице. Доступно только staff.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        request (HttpRequest): Объект запроса Django.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        HttpResponse: HTML-страница с таблицей всех жалоб</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">rep_history</span> <span class="o">=</span> <span class="n">Report</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;rep_history&quot;</span> <span class="p">:</span> <span class="n">rep_history</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;report_history.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="report_review">
+<a class="viewcode-back" href="../../code.html#voting.views.report_review">[документация]</a>
+<span class="nd">@staff_member_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">report_review</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">report_id</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Просмотр и рассмотрение конкретной жалобы.</span>
+
+<span class="sd">    Доступно только staff. Позволяет забанить пользователя и/или удалить опрос и закрыть жалобу</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        request (HttpRequest): Объект запроса Django.</span>
+<span class="sd">        report_id (int): Первичный ключ (ID) жалобы.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        HttpResponse: HTML-страница с возможностью рассмотреть жалобу</span>
+<span class="sd">        HttpResponseRedirect: Перенаправление на страницу со всеми жалобами</span>
+<span class="sd">        HttpResponseRedirect: Перенаправление на страницу с рассмотрением жалобы</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="n">report</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Report</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">report_id</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;close_report&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">:</span>
+            <span class="n">report</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">report</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;report_history&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="s1">&#39;delete_voting&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">:</span>
+            <span class="n">voting</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">voting</span>
+            <span class="n">voting</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">voting</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;report_review&#39;</span><span class="p">,</span> <span class="n">report_id</span><span class="o">=</span><span class="n">report</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="s1">&#39;ban_user&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">voting</span><span class="o">.</span><span class="n">creator</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
+                <span class="n">user</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;report_review&#39;</span><span class="p">,</span> <span class="n">report_id</span><span class="o">=</span><span class="n">report</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;report&#39;</span><span class="p">:</span> <span class="n">report</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;report_review.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="voting">
+<a class="viewcode-back" href="../../code.html#voting.views.voting">[документация]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">voting</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">voting_id</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Просмотр страницы голосования.</span>
+
+<span class="sd">    Отображается страница с конкретным голосованием, на которое нажал пользователь.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        request (HttpRequest): Объект запроса Django.</span>
+<span class="sd">        voting_id (int): Первичный ключ (ID) голосования.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        HttpResponse: HTML-страница с голосованием</span>
+<span class="sd">        HttpResponseRedirect: Перенаправление на главную страницу</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;delete_voting&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">:</span>
+            <span class="n">v_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;delete_voting&#39;</span><span class="p">)</span>
+            <span class="n">voting_to_delete</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Voting</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">v_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">voting_to_delete</span><span class="o">.</span><span class="n">creator</span> <span class="o">==</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">:</span>
+                <span class="n">voting_to_delete</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">voting_to_delete</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Голосование успешно удалено!&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Вы не можете удалить чужое голосование!&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;voting&#39;</span><span class="p">,</span> <span class="n">voting_id</span><span class="o">=</span><span class="n">voting_id</span><span class="p">)</span>
+
+    <span class="n">voting</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Voting</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">voting_id</span><span class="p">)</span>
+
+    <span class="n">choices</span> <span class="o">=</span> <span class="n">voting</span><span class="o">.</span><span class="n">choices</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">total_votes</span> <span class="o">=</span> <span class="n">Vote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">choice__voting</span><span class="o">=</span><span class="n">voting</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="n">choices_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">choices</span><span class="p">:</span>
+        <span class="n">vote_count</span> <span class="o">=</span> <span class="n">choice</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="p">(</span><span class="n">vote_count</span> <span class="o">/</span> <span class="n">total_votes</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span> <span class="k">if</span> <span class="n">total_votes</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="n">user_voted_for_this</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+            <span class="n">user_voted_for_this</span> <span class="o">=</span> <span class="n">Vote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">author</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                <span class="n">choice</span><span class="o">=</span><span class="n">choice</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+        <span class="n">choices_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s1">&#39;choice&#39;</span><span class="p">:</span> <span class="n">choice</span><span class="p">,</span>
+            <span class="s1">&#39;vote_count&#39;</span><span class="p">:</span> <span class="n">vote_count</span><span class="p">,</span>
+            <span class="s1">&#39;percentage&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">percentage</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s1">&#39;user_voted&#39;</span><span class="p">:</span> <span class="n">user_voted_for_this</span><span class="p">,</span>
+        <span class="p">})</span>
+
+    <span class="n">comments</span> <span class="o">=</span> <span class="n">voting</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;author__profile&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span> <span class="ow">and</span> <span class="s1">&#39;add_comment&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">voting</span><span class="o">.</span><span class="n">commentaries</span> <span class="ow">and</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+            <span class="n">comment_text</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;comment_text&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">comment_text</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">comment_text</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Комментарий должен содержать минимум 5 символов&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">comment_text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">:</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Комментарий не должен превышать 1000 символов&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">Comment</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                        <span class="n">voting</span><span class="o">=</span><span class="n">voting</span><span class="p">,</span>
+                        <span class="n">author</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                        <span class="n">text</span><span class="o">=</span><span class="n">comment_text</span>
+                    <span class="p">)</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Ваш комментарий добавлен!&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;voting&#39;</span><span class="p">,</span> <span class="n">voting_id</span><span class="o">=</span><span class="n">voting_id</span><span class="p">)</span>
+
+    <span class="n">user_voted</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+        <span class="n">user_voted</span> <span class="o">=</span> <span class="n">Vote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">author</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+            <span class="n">choice__voting</span><span class="o">=</span><span class="n">voting</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;v&quot;</span><span class="p">:</span> <span class="n">voting</span><span class="p">,</span>
+        <span class="s2">&quot;choices_data&quot;</span><span class="p">:</span> <span class="n">choices_data</span><span class="p">,</span>
+        <span class="s2">&quot;total_votes&quot;</span><span class="p">:</span> <span class="n">total_votes</span><span class="p">,</span>
+        <span class="s2">&quot;user_voted&quot;</span><span class="p">:</span> <span class="n">user_voted</span><span class="p">,</span>
+        <span class="s2">&quot;comments&quot;</span><span class="p">:</span> <span class="n">comments</span><span class="p">,</span>
+        <span class="s2">&quot;comment_form&quot;</span><span class="p">:</span> <span class="n">CommentForm</span><span class="p">()</span> <span class="k">if</span> <span class="n">voting</span><span class="o">.</span><span class="n">commentaries</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;voting.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="statistics">
+<a class="viewcode-back" href="../../code.html#voting.views.statistics">[документация]</a>
+<span class="nd">@staff_member_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">statistics</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">StatisticsForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">period_label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+        <span class="n">period</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">period</span> <span class="o">==</span> <span class="s1">&#39;today&#39;</span><span class="p">:</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">now</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">end_date</span> <span class="o">=</span> <span class="n">now</span>
+            <span class="n">period_label</span> <span class="o">=</span> <span class="s2">&quot;сегодня&quot;</span>
+        <span class="k">elif</span> <span class="n">period</span> <span class="o">==</span> <span class="s1">&#39;yesterday&#39;</span><span class="p">:</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">now</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">end_date</span> <span class="o">=</span> <span class="n">start_date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">period_label</span> <span class="o">=</span> <span class="s2">&quot;вчера&quot;</span>
+        <span class="k">elif</span> <span class="n">period</span> <span class="o">==</span> <span class="s1">&#39;week&#39;</span><span class="p">:</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+            <span class="n">end_date</span> <span class="o">=</span> <span class="n">now</span>
+            <span class="n">period_label</span> <span class="o">=</span> <span class="s2">&quot;за последние 7 дней&quot;</span>
+        <span class="k">elif</span> <span class="n">period</span> <span class="o">==</span> <span class="s1">&#39;month&#39;</span><span class="p">:</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+            <span class="n">end_date</span> <span class="o">=</span> <span class="n">now</span>
+            <span class="n">period_label</span> <span class="o">=</span> <span class="s2">&quot;за последние 30 дней&quot;</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># custom</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">],</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+            <span class="n">end_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s1">&#39;end_date&#39;</span><span class="p">],</span> <span class="n">datetime</span><span class="o">.</span><span class="n">max</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+            <span class="n">period_label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;с </span><span class="si">{</span><span class="n">start_date</span><span class="o">.</span><span class="n">date</span><span class="p">()</span><span class="si">}</span><span class="s2"> по </span><span class="si">{</span><span class="n">end_date</span><span class="o">.</span><span class="n">date</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+        <span class="n">votings_in_period</span> <span class="o">=</span> <span class="n">Voting</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">created_at__range</span><span class="o">=</span><span class="p">[</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">],</span>
+            <span class="n">visible</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+            <span class="n">vote_count</span><span class="o">=</span><span class="n">Count</span><span class="p">(</span><span class="s1">&#39;choices__votes&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">Q</span><span class="p">(</span><span class="n">choices__votes__created_at__range</span><span class="o">=</span><span class="p">[</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">]))</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-vote_count&#39;</span><span class="p">)</span>
+        <span class="n">active_users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">vote__created_at__range</span><span class="o">=</span><span class="p">[</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+            <span class="n">vote_count</span><span class="o">=</span><span class="n">Count</span><span class="p">(</span><span class="s1">&#39;vote&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">Q</span><span class="p">(</span><span class="n">vote__created_at__range</span><span class="o">=</span><span class="p">[</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">]))</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-vote_count&#39;</span><span class="p">)</span>
+        <span class="n">popular_choices</span> <span class="o">=</span> <span class="n">Choice</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">votes__created_at__range</span><span class="o">=</span><span class="p">[</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+            <span class="n">vote_count</span><span class="o">=</span><span class="n">Count</span><span class="p">(</span><span class="s1">&#39;votes&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">Q</span><span class="p">(</span><span class="n">votes__created_at__range</span><span class="o">=</span><span class="p">[</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">]))</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s1">&#39;voting&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-vote_count&#39;</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
+        <span class="n">total_votes</span> <span class="o">=</span> <span class="n">Vote</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">created_at__range</span><span class="o">=</span><span class="p">[</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">])</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">total_votings</span> <span class="o">=</span> <span class="n">votings_in_period</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">total_users</span> <span class="o">=</span> <span class="n">active_users</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;period_label&#39;</span><span class="p">:</span> <span class="n">period_label</span><span class="p">,</span>
+            <span class="s1">&#39;total_votes&#39;</span><span class="p">:</span> <span class="n">total_votes</span><span class="p">,</span>
+            <span class="s1">&#39;total_votings&#39;</span><span class="p">:</span> <span class="n">total_votings</span><span class="p">,</span>
+            <span class="s1">&#39;total_users&#39;</span><span class="p">:</span> <span class="n">total_users</span><span class="p">,</span>
+            <span class="s1">&#39;votings_in_period&#39;</span><span class="p">:</span> <span class="n">votings_in_period</span><span class="p">,</span>
+            <span class="s1">&#39;active_users&#39;</span><span class="p">:</span> <span class="n">active_users</span><span class="p">,</span>
+            <span class="s1">&#39;popular_choices&#39;</span><span class="p">:</span> <span class="n">popular_choices</span><span class="p">,</span>
+            <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="n">start_date</span><span class="p">,</span>
+            <span class="s1">&#39;end_date&#39;</span><span class="p">:</span> <span class="n">end_date</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;statistics.html&#39;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s1">&#39;form&#39;</span><span class="p">:</span> <span class="n">form</span><span class="p">,</span>
+        <span class="s1">&#39;stats&#39;</span><span class="p">:</span> <span class="n">stats</span><span class="p">,</span>
+    <span class="p">})</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Авторские права 2026, MSHP Team. </p>
+  </div>
+
+  Собрано при помощи <a href="https://www.sphinx-doc.org/">Sphinx</a> с использованием
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">темы,</a>
+    предоставленной <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

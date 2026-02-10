@@ -1,0 +1,371 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ru" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Документация кода &mdash; документация Hard Second Project 0.3</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=d32dc9ce" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=da8fd15d"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/translations.js?v=cd1d70c9"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="genindex.html" />
+    <link rel="search" title="Поиск" href="search.html" />
+    <link rel="prev" title="Структура проекта" href="structure.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Hard Second Project
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Поиск в документации" aria-label="Поиск в документации" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
+              <p class="caption" role="heading"><span class="caption-text">Содержание:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Структура проекта</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Документация кода</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-voting.models">Приложение Voting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#voting.models.Choice"><code class="docutils literal notranslate"><span class="pre">Choice</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.models.Comment"><code class="docutils literal notranslate"><span class="pre">Comment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.models.Report"><code class="docutils literal notranslate"><span class="pre">Report</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#voting.models.Report.get_title_display"><code class="docutils literal notranslate"><span class="pre">Report.get_title_display()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#voting.models.Report.radio_report"><code class="docutils literal notranslate"><span class="pre">Report.radio_report</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.models.Vote"><code class="docutils literal notranslate"><span class="pre">Vote</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.models.Voting"><code class="docutils literal notranslate"><span class="pre">Voting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.models.get_end_time"><code class="docutils literal notranslate"><span class="pre">get_end_time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.views.create_voting"><code class="docutils literal notranslate"><span class="pre">create_voting()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.views.index"><code class="docutils literal notranslate"><span class="pre">index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.views.report"><code class="docutils literal notranslate"><span class="pre">report()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.views.report_history"><code class="docutils literal notranslate"><span class="pre">report_history()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.views.report_review"><code class="docutils literal notranslate"><span class="pre">report_review()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.views.save_vote"><code class="docutils literal notranslate"><span class="pre">save_vote()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.views.statistics"><code class="docutils literal notranslate"><span class="pre">statistics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#voting.views.voting"><code class="docutils literal notranslate"><span class="pre">voting()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-user.models">Приложение User</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#user.models.Profile"><code class="docutils literal notranslate"><span class="pre">Profile</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#user.models.User"><code class="docutils literal notranslate"><span class="pre">User</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#user.models.User.REQUIRED_FIELDS"><code class="docutils literal notranslate"><span class="pre">User.REQUIRED_FIELDS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#user.models.User.USERNAME_FIELD"><code class="docutils literal notranslate"><span class="pre">User.USERNAME_FIELD</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#user.models.create_user_profile"><code class="docutils literal notranslate"><span class="pre">create_user_profile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#user.models.get_random_avatars"><code class="docutils literal notranslate"><span class="pre">get_random_avatars()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#user.views.ban_user"><code class="docutils literal notranslate"><span class="pre">ban_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#user.views.logout_view"><code class="docutils literal notranslate"><span class="pre">logout_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#user.views.profile"><code class="docutils literal notranslate"><span class="pre">profile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#user.views.register_user"><code class="docutils literal notranslate"><span class="pre">register_user()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Меню навигации для мобильных устройств" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Hard Second Project</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Навигация по страницам">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Документация кода</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/code.rst.txt" rel="nofollow"> Просмотреть исходный код страницы</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>Документация кода<a class="headerlink" href="#id1" title="Ссылка на этот заголовок"></a></h1>
+<section id="module-voting.models">
+<span id="voting"></span><h2>Приложение Voting<a class="headerlink" href="#module-voting.models" title="Ссылка на этот заголовок"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="voting.models.Choice">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">voting.models.</span></span><span class="sig-name descname"><span class="pre">Choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voting</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/models.html#Choice"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.models.Choice" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="voting.models.Comment">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">voting.models.</span></span><span class="sig-name descname"><span class="pre">Comment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voting</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_active</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/models.html#Comment"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.models.Comment" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="voting.models.Report">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">voting.models.</span></span><span class="sig-name descname"><span class="pre">Report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voting</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/models.html#Report"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.models.Report" title="Ссылка на это определение"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="voting.models.Report.get_title_display">
+<span class="sig-name descname"><span class="pre">get_title_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;django.db.models.fields.CharField:</span> <span class="pre">title&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#voting.models.Report.get_title_display" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="voting.models.Report.radio_report">
+<span class="sig-name descname"><span class="pre">radio_report</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('rights',</span> <span class="pre">'Нарушены</span> <span class="pre">авторские</span> <span class="pre">права'),</span> <span class="pre">('fake',</span> <span class="pre">'Ложная</span> <span class="pre">информация'),</span> <span class="pre">('unpleasant',</span> <span class="pre">'Неприятный</span> <span class="pre">контент'),</span> <span class="pre">('offended',</span> <span class="pre">'Это</span> <span class="pre">меня</span> <span class="pre">оскорбило'),</span> <span class="pre">('other',</span> <span class="pre">'Другое')]</span></span><a class="headerlink" href="#voting.models.Report.radio_report" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="voting.models.Vote">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">voting.models.</span></span><span class="sig-name descname"><span class="pre">Vote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/models.html#Vote"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.models.Vote" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="voting.models.Voting">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">voting.models.</span></span><span class="sig-name descname"><span class="pre">Voting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/models.html#Voting"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.models.Voting" title="Ссылка на это определение"></a></dt>
+<dd><p>class VotingType(models.TextChoices):
+SINGLE = „single“, „Один вариант“
+MULTIPLE = „multiple“, „Несколько вариантов“</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="voting.models.get_end_time">
+<span class="sig-prename descclassname"><span class="pre">voting.models.</span></span><span class="sig-name descname"><span class="pre">get_end_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/models.html#get_end_time"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.models.get_end_time" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function" id="module-voting.views">
+<dt class="sig sig-object py" id="voting.views.create_voting">
+<span class="sig-prename descclassname"><span class="pre">voting.views.</span></span><span class="sig-name descname"><span class="pre">create_voting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/views.html#create_voting"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.views.create_voting" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="voting.views.index">
+<span class="sig-prename descclassname"><span class="pre">voting.views.</span></span><span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/views.html#index"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.views.index" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="voting.views.report">
+<span class="sig-prename descclassname"><span class="pre">voting.views.</span></span><span class="sig-name descname"><span class="pre">report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voting_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/views.html#report"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.views.report" title="Ссылка на это определение"></a></dt>
+<dd><p>Создание жалобы на голосование.</p>
+<p>Только для авторизованных пользователей. Позволяет оставить жалобу на голосование (можно либо выбрать готовую из списка, либо написать свою)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>HttpRequest</em>) – Объект запроса Django.</p></li>
+<li><p><strong>voting_id</strong> (<em>int</em>) – Первичный ключ (ID) голосования.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTML-страница с формой жалобы</p>
+</dd>
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="voting.views.report_history">
+<span class="sig-prename descclassname"><span class="pre">voting.views.</span></span><span class="sig-name descname"><span class="pre">report_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/views.html#report_history"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.views.report_history" title="Ссылка на это определение"></a></dt>
+<dd><p>Просмотр истории жалоб.</p>
+<p>Список всех жалоб в одной таблице. Доступно только staff.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>HttpRequest</em>) – Объект запроса Django.</p>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTML-страница с таблицей всех жалоб</p>
+</dd>
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="voting.views.report_review">
+<span class="sig-prename descclassname"><span class="pre">voting.views.</span></span><span class="sig-name descname"><span class="pre">report_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/views.html#report_review"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.views.report_review" title="Ссылка на это определение"></a></dt>
+<dd><p>Просмотр и рассмотрение конкретной жалобы.</p>
+<p>Доступно только staff. Позволяет забанить пользователя и/или удалить опрос и закрыть жалобу</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>HttpRequest</em>) – Объект запроса Django.</p></li>
+<li><p><strong>report_id</strong> (<em>int</em>) – Первичный ключ (ID) жалобы.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTML-страница с возможностью рассмотреть жалобу
+HttpResponseRedirect: Перенаправление на страницу со всеми жалобами
+HttpResponseRedirect: Перенаправление на страницу с рассмотрением жалобы</p>
+</dd>
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="voting.views.save_vote">
+<span class="sig-prename descclassname"><span class="pre">voting.views.</span></span><span class="sig-name descname"><span class="pre">save_vote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voting_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/views.html#save_vote"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.views.save_vote" title="Ссылка на это определение"></a></dt>
+<dd><p>Сохраняет голос текущего пользователя за выбранный вариант. <strong>****</strong>!!</p>
+<p>Проверяет, не голосовал ли пользователь ранее, и если нет —
+создает запись голоса.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>HttpRequest</em>) – Объект запроса Django.</p></li>
+<li><p><strong>voting_id</strong> (<em>int</em>) – Первичный ключ (ID) голосования.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>Перенаправление на главную страницу после сохранения.</p>
+</dd>
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponseRedirect</p>
+</dd>
+<dt class="field-even">Исключение<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Http404</strong> – Если голосование или вариант ответа не найдены.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="voting.views.statistics">
+<span class="sig-prename descclassname"><span class="pre">voting.views.</span></span><span class="sig-name descname"><span class="pre">statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/views.html#statistics"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.views.statistics" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="voting.views.voting">
+<span class="sig-prename descclassname"><span class="pre">voting.views.</span></span><span class="sig-name descname"><span class="pre">voting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voting_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/voting/views.html#voting"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#voting.views.voting" title="Ссылка на это определение"></a></dt>
+<dd><p>Просмотр страницы голосования.</p>
+<p>Отображается страница с конкретным голосованием, на которое нажал пользователь.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>HttpRequest</em>) – Объект запроса Django.</p></li>
+<li><p><strong>voting_id</strong> (<em>int</em>) – Первичный ключ (ID) голосования.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>HTML-страница с голосованием
+HttpResponseRedirect: Перенаправление на главную страницу</p>
+</dd>
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-user.models">
+<span id="user"></span><h2>Приложение User<a class="headerlink" href="#module-user.models" title="Ссылка на этот заголовок"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="user.models.Profile">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">user.models.</span></span><span class="sig-name descname"><span class="pre">Profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avatar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/user/models.html#Profile"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#user.models.Profile" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="user.models.User">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">user.models.</span></span><span class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_login</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_superuser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_staff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_active</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_joined</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nickname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/user/models.html#User"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#user.models.User" title="Ссылка на это определение"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="user.models.User.REQUIRED_FIELDS">
+<span class="sig-name descname"><span class="pre">REQUIRED_FIELDS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['username',</span> <span class="pre">'nickname']</span></span><a class="headerlink" href="#user.models.User.REQUIRED_FIELDS" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="user.models.User.USERNAME_FIELD">
+<span class="sig-name descname"><span class="pre">USERNAME_FIELD</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'email'</span></span><a class="headerlink" href="#user.models.User.USERNAME_FIELD" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="user.models.create_user_profile">
+<span class="sig-prename descclassname"><span class="pre">user.models.</span></span><span class="sig-name descname"><span class="pre">create_user_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/user/models.html#create_user_profile"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#user.models.create_user_profile" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="user.models.get_random_avatars">
+<span class="sig-prename descclassname"><span class="pre">user.models.</span></span><span class="sig-name descname"><span class="pre">get_random_avatars</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/user/models.html#get_random_avatars"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#user.models.get_random_avatars" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function" id="module-user.views">
+<dt class="sig sig-object py" id="user.views.ban_user">
+<span class="sig-prename descclassname"><span class="pre">user.views.</span></span><span class="sig-name descname"><span class="pre">ban_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/user/views.html#ban_user"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#user.views.ban_user" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="user.views.logout_view">
+<span class="sig-prename descclassname"><span class="pre">user.views.</span></span><span class="sig-name descname"><span class="pre">logout_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/user/views.html#logout_view"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#user.views.logout_view" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="user.views.profile">
+<span class="sig-prename descclassname"><span class="pre">user.views.</span></span><span class="sig-name descname"><span class="pre">profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nickname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/user/views.html#profile"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#user.views.profile" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="user.views.register_user">
+<span class="sig-prename descclassname"><span class="pre">user.views.</span></span><span class="sig-name descname"><span class="pre">register_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/user/views.html#register_user"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#user.views.register_user" title="Ссылка на это определение"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Нижняя область">
+        <a href="structure.html" class="btn btn-neutral float-left" title="Структура проекта" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Предыдущая</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Авторские права 2026, MSHP Team. </p>
+  </div>
+
+  Собрано при помощи <a href="https://www.sphinx-doc.org/">Sphinx</a> с использованием
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">темы,</a>
+    предоставленной <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

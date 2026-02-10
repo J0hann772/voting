@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Reports {% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'voting/report.css' %}">
+<main>
+{% if report_form %}
+    <form method="POST">
+        {% csrf_token %}
+            <h2>Причина жалобы</h2>
+            {% for value, label in report_form.fields.title.choices %}
+            <label>
+                <input type="radio" name="title" value="{{value}}"> {{ label }}
+            </label>
+            {% endfor %}
+
+        <div class="input">
+            {{ report_form.description.label_tag }} {{ report_form.description }}
+        </div>
+
+        {% if error %}
+            <p style="color: red">{{ error }}</p>
+        {% endif %}
+
+        <div>
+            <input type="submit" value="Отправить">
+        </div>
+    </form>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const radios = document.querySelectorAll('input[name="title"]');
+        const descField = document.querySelector('textarea');
+        descField.style.display = 'none';
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value === 'other') {
+                    descField.style.display = 'block';
+                } else {
+                    descField.style.display = 'none';
+                }
+            });
+        });
+    });
+    </script>
+
+{% else %}
+    <div class="sent">
+    <h5>
+        {% if report_model.title == "other" %}
+        Ваша жалоба отправлена ({{ report_model.description }})
+        {% else %}
+        Ваша жалоба отправлена ({{ report_model.get_title_display }})
+        {% endif %}
+    </h5>
+    <p><a href="{% url 'main' %}">На главную -></a></p>
+    </div>
+
+{% endif %}
+</main>
+{% endblock %}

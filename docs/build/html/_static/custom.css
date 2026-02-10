@@ -1,0 +1,22 @@
+
+.wy-nav-content {
+    max-width: 100% !important;
+}
+
+.wy-nav-content-wrap {
+    max-width: none !important;
+}
+
+
+:target {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    padding: 2px;
+    transition: background-color 0.5s ease-in-out;
+}
+
+
+dl.py:target {
+    background-color: #fff3cd !important;
+    display: block;
+}

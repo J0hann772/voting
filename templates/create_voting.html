@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %} Create_voting {% endblock %}
+
+{% block content %}
+    <h2>Создание голосования</h2>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <h3>Настройки</h3>
+        {{ form.as_p }}
+
+        <h3>Варианты ответа</h3>
+        {% for val in choices %}
+            <p>
+                <input type="text" name="choice_text" value="{{ val }}" placeholder="Вариант {{ forloop.counter }}">
+
+                <button type="submit" name="action" value="remove_{{ forloop.counter0 }}"
+                        formnovalidate {% if choices|length <= 2 %}disabled{% endif %}>
+                    Удалить
+                </button>
+            </p>
+        {% endfor %}
+
+        <button type="submit" name="action" value="add_choice" formnovalidate>
+            + Добавить поле
+        </button>
+
+        <hr>
+
+        <button type="submit" name="action" value="save_voting">
+            Опубликовать
+        </button>
+        <a href="{% url 'main' %}">Назад</a>
+    </form>
+{% endblock %}

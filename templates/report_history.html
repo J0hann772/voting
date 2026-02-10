@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Report_history {% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'voting/report.css' %}">
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Голосование</th>
+        <th>Автор жалобы</th>
+        <th>Дата создания</th>
+        <th>Название</th>
+        <th>Описание</th>
+        <th>В рассмотрении</th>
+    </tr>
+
+    {% for elem in rep_history %}
+    <tr>
+        <td>
+            <a href="{% url 'report_review' elem.id %}">
+                {{ elem.id }}
+            </a>
+        </td>
+        <td>
+            <a href="{% url 'voting' elem.voting.id %}">
+                {{ elem.voting.title }}
+            </a>
+        </td>
+        <td>
+            <a href="{% url 'profile' elem.author.nickname %}">
+                {{ elem.author.username }}
+            </a>
+        </td>
+        <td>{{ elem.created_at|date:"d.m.Y H:i" }}</td>
+        <td>{{ elem.title }}</td>
+        <td>{{ elem.description }}</td>
+        <td>{{ elem.active }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

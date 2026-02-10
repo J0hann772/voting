@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} {{ v.title }} {% endblock %}
+
+{% block content %}
+<h2>{{ v.title }}</h2>
+
+{% if v.description %}
+<p>{{ v.description }}</p>
+{% endif %}
+
+<p><strong>Автор:</strong>
+    <a href="{% url 'profile' v.creator.nickname %}">{{ v.creator.nickname }}</a>
+</p>
+
+<p><strong>Создано:</strong> {{ v.created_at|date:"d.m.Y H:i" }}</p>
+
+{% if v.end_at %}
+<p><strong>Завершится:</strong> {{ v.end_at|date:"d.m.Y H:i" }}</p>
+{% endif %}
+
+<hr>
+{% if user_voted or not user.is_authenticated or not v.is_active %}
+<h4>Статистика голосов:</h4>
+<p>Всего голосов: <strong>{{ total_votes }}</strong></p>
+
+{% for item in choices_data %}
+<div style="margin-bottom: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+        <div>
+            {{ item.choice.text }}
+            {% if item.user_voted and user.is_authenticated %}
+            <span style="background-color: #28a745; color: white; padding: 2px 5px; border-radius: 3px; font-size: 12px;">Ваш выбор</span>
+            {% endif %}
+        </div>
+        <div>
+            <strong>{{ item.vote_count }}</strong> голосов ({{ item.percentage }}%)
+        </div>
+    </div>
+
+    <div style="background-color: #f0f0f0; height: 20px; border-radius: 10px; overflow: hidden;">
+        <div style="background-color: {% if item.user_voted and user.is_authenticated %}#28a745{% else %}#007bff{% endif %};
+                    height: 100%; width: {{ item.percentage }}%;">
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% else %}
+<h4>Выберите вариант:</h4>
+<form method="post" action="{% url 'add_vote' v.id %}">
+    {% csrf_token %}
+    {% for choice in v.choices.all %}
+    <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+        <button type="submit" name="choice_id" value="{{ choice.id }}"
+                style="background: none; border: none; padding: 0; text-align: left; width: 100%; cursor: pointer;">
+            {{ choice.text }}
+        </button>
+    </div>
+    {% empty %}
+    <p>Вариантов ответа нет</p>
+    {% endfor %}
+</form>
+{% endif %}
+<hr>
+{% if v.commentaries %}
+<h4>Комментарии ({{ comments.count }}):</h4>
+
+{% if user.is_authenticated and v.is_active %}
+<form method="post">
+    {% csrf_token %}
+    <div style="margin-bottom: 15px;">
+        <textarea name="comment_text" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd;"
+                  placeholder="Оставьте комментарий..."></textarea>
+    </div>
+    <button type="submit" name="add_comment" style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px;">
+        Добавить комментарий
+    </button>
+</form>
+{% elif not user.is_authenticated %}
+<p><a href="{% url 'login' %}">Войдите</a>, чтобы оставлять комментарии</p>
+{% endif %}
+<div style="margin-top: 20px;">
+    {% for comment in comments %}
+    <div style="border-left: 3px solid #007bff; padding-left: 10px; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+            <div>
+                <strong>{{ comment.author.nickname }}</strong>
+            </div>
+            <div style="color: #666; font-size: 12px;">
+                {{ comment.created_at|date:"d.m.Y H:i" }}
+            </div>
+        </div>
+        <div style="margin-top: 5px;">
+            {{ comment.text|linebreaks }}
+        </div>
+    </div>
+    {% empty %}
+    <p>Комментариев пока нет</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<hr>
+
+
+<div style="display: flex; justify-content: space-between; margin-top: 20px;">
+    <div>
+        {% if v.creator == user %}
+        <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" name="delete_voting" value="{{ v.id }}"
+                    style="background-color: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 4px;">
+                Удалить голосование
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div>
+        {% if user.is_authenticated and v.creator != user %}
+        <a href="{% url 'report' v.id %}" style="background-color: #ffc107; color: black; padding: 8px 16px; border-radius: 4px; text-decoration: none;">
+            Пожаловаться
+        </a>
+        {% endif %}
+
+        <a href="{% url 'main' %}" style="background-color: #6c757d; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; margin-left: 10px;">
+            Назад к списку
+        </a>
+    </div>
+</div>
+
+{% endblock %}

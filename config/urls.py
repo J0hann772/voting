@@ -14,16 +14,36 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
-from user import views
+from config import settings
+from user.views import logout_view, register_user, profile, ban_user
+from voting.views import index, save_vote, create_voting, report, report_history, report_review, voting
+from voting.views import statistics
 
-urlpatterns = [
+
+urlpatterns = ([
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
 
-    path('', views.index, name='main'),
-    path('registration/', views.register_user, name='registration'),
-]
+    path('', index, name='main'),
+    path('logout/', logout_view, name='logout'),
+    path('registration/', register_user, name='registration'),
+    path('voting/<int:voting_id>/', voting, name='voting'),
+    path('voting/<int:voting_id>/vote', save_vote, name='add_vote'),
+    path('create_voting/', create_voting, name='create_voting'),
+    path('profile/<str:nickname>/', profile, name='profile'),
+    path('report/<int:voting_id>/', report, name='report'),
+    path('report_history/', report_history, name='report_history'),
+    path('report_review/<int:report_id>/', report_review, name='report_review'),
+    path('delete_voting/<int:report_id>/', report_review, name='delete_voting'),
+    path('ban_user/<int:user_id>/', ban_user, name='ban_user'),
+    path('close_report/<int:report_id>/', report_review, name='close_report'),
+    path('statistics/', statistics, name='statistics'),
+
+] )
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

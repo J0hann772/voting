@@ -1,29 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <nav>
-        <a href="{% url 'main' %}">Главная</a>
-        {% if not user.is_authenticated %}
-        <a href="{% url 'registration' %}" >Регистрация</a>
-        <a href="{% url 'login' %}">Вход</a>
-        {% else %}
+{% extends 'base.html' %}
+{% load static %}
 
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit">Выйти</button>
+{% block title %} Main {% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'voting/index.css' %}">
+{% if votings %}
+<ul class="votings">
+    {% for v in votings %}
+    <li class="voting">
+        <div class="title">
+            <a href="{% url 'voting' v.id %}">
+                <h3>{{ v.title }}</h3>
+                <p>{{ v.description }}</p>
+            </a>
+
+        </div>
         </form>
-        {%endif%}
+        <div class="creator">
+            {% if v.creator.profile.avatar %}
+            <img src="{{ v.creator.profile.avatar.url }}" alt="{{ v.creator.nickname }}">
+            {% endif %}
+
+            <span>
+                <a href="{% url 'profile' v.creator.nickname %}" class="text-link">
+                    {{ v.creator.nickname }}
+                </a>
+            </span>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+<div class="pagination">
+    {% for p in pages %}
+    <a href="?page={{ p }}" class="{% if p == current_page %}current_page{% endif %}">
+        [{{ p }}]
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<p class="empty">Записей пока нет</p>
+{% endif %}
 
 
-    </nav>
-    {% if user.is_authenticated %}
-    <p>Nickname: {{user.nickname}}</p>
-    {% else %}
-    <p>Guest</p>
-    {%endif%}
-</body>
-</html>
+{% endblock %}
